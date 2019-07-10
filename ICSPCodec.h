@@ -27,5 +27,5 @@ extern byte tempFrame[HEIGHT][WIDTH];
 //void getYUVFile(int inputFrames);
 void initYUV();
 void saveByte(const char * filePath, int caseVal);
-void saveYUV(const char * filePath, unsigned char ** fileVal, float caseUV = 1);
+void saveYUV(const char * filePath, float caseUV = 1, int caseVal = 1);
 //unsigned char** getFrame(const char * filePath);

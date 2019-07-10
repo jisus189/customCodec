@@ -1,7 +1,6 @@
 #include "pch.h"
 
 
-
 void ReadFrames(const char * filePath, int pIndex, int cIndex)
 {
 	HANDLE hFile;

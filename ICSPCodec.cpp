@@ -1,4 +1,4 @@
-﻿// ISPCCodec.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
+﻿//  ISPCCodec.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
 //
 
 #include "pch.h"
@@ -57,14 +57,14 @@ void getFrame(int frameCount, const char * filePath) {
 	ReadFile(hFile, tempFrame, FRAME_SIZE, &dwRead, NULL);
 	CloseHandle(hFile);
 	*/
-
+	
 
 	if (!infile) {
 		printf("NO FILE");
 		return;
 	}
 	for (int i = 0; i < HEIGHT; i++) {
-		fread(frame_no_loss_y[i], 1, WIDTH, infile);
+		fread(tempFrame[i], 1, WIDTH, infile);
 	}
 
 
@@ -119,12 +119,20 @@ void saveByte(const char * filePath, int caseVal) {
 	printf("saved saveMV!\n");
 }
 
-void saveYUV(const char * filePath, unsigned char ** fileVal, float caseUV) {
+void saveYUV(const char * filePath, float caseUV,int caseVal) {
 	FILE *outfile = fopen(filePath, "wb");
 	float savingSize = WIDTH * HEIGHT * caseUV;
-	for (int i = 0; i < FRAME_MAX; i++) {
-		fwrite(fileVal[i], 1, savingSize, outfile);
+	if (caseVal == 1) {
+		for (int i = 0; i < FRAME_MAX; i++) {
+			fwrite(DCTFrames[i], 1, savingSize, outfile);
+		}
 	}
+	else if (caseVal == 2) {
+		for (int i = 0; i < FRAME_MAX; i++) {
+			fwrite(IDCTFrames[i], 1, savingSize, outfile);
+		}
+	}
+	
 	fclose(outfile);
 }
 /*
@@ -148,25 +156,42 @@ int main()
 	const char * YDCTPath = "C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/saveYDCT.yuv";
 	//getYUVFile(FRAME_MAX);
 	initYUV();
-	getFrame(1, initYUV2);
-	saveYUV(YPath, frame_no_loss_y);
-	for (int i = 0; i < HEIGHT; i++) {
-		for (int j = 0; j < WIDTH; j++)//아래
-		{
-			printf(" %d + %d = %d \n", i, j, frame_no_loss_y[i][j]);
-			//printf(" %d + %d = %d \n", i, j, frame_no_loss_u[i][j]);
-			//printf(" %d + %d = %d \n", i, j, frame_no_loss_v[i][j]);
-		}
-	}
+	
+	//saveYUV(YPath, frame_no_loss_y);
+	//for (int i = 0; i < HEIGHT; i++) {
+	//	for (int j = 0; j < WIDTH; j++)//아래
+	//	{
+	//		printf(" %d + %d = %d \n", i, j, frame_no_loss_y[i][j]);
+	//		//printf(" %d + %d = %d \n", i, j, frame_no_loss_u[i][j]);
+	//		//printf(" %d + %d = %d \n", i, j, frame_no_loss_v[i][j]);
+	//	}
+	//}
 	//MotionEstimationExc(YUVPath, FRAME_MAX);
+	infile = fopen(YPath, "rb");
 	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
-
+		getFrame(i_frame, YPath);
 		ICSPFowardDct(i_frame);
-		//ICSPInverseDct(i_frame);
 	}
-	saveByte(YDCTPath, 2);
+	saveYUV(YDCTPath);
+	fclose(infile);
+	infile = fopen(YDCTPath, "rb");
+	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
+		getFrame(i_frame, YDCTPath);
+		ICSPInverseDct(i_frame);
+	}
+	saveYUV(IDCTPath,1,2);
+	fclose(infile);
+	//for (int i_frame = 59; i_frame < FRAME_MAX; i_frame++) {
+	//	for (int i = 0; i < HEIGHT; i++) {
+	//		for (int j = 0; j < WIDTH; j++)//아래
+	//		{
+	//			printf("%d %d %d =%d\n",i_frame,i,j,DCTFrames[i_frame][i][j]);
+	//		}
+	//	}
+	//}
+	//saveByte(, 2);
+	
 	/*
-
 
 	saveYUV(UPath, frame_no_loss_u, 0.25);
 	saveYUV(VPath, frame_no_loss_v, 0.25);

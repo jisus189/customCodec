@@ -77,8 +77,9 @@ void ICSPFowardDct(int nowFrameCount) {
 	int u, v,y, x;
 	double cu, cv, result, MSE, SUM, PSNR;
 	// 8x8 split
-	for (int splitX = 0; splitX < WIDTH / 8; splitX++) {
+	
 		for (int splitY = 0; splitY < HEIGHT / 8; splitY++) {
+			for (int splitX = 0; splitX < WIDTH / 8; splitX++) {
 			// u,v¿¡ 
 			for (v = 0; v < 8; v++)
 			{
@@ -96,69 +97,40 @@ void ICSPFowardDct(int nowFrameCount) {
 							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[8 * splitY + y][8 * splitX + x];
 						}
 					}
-					DCTFrames[nowFrameCount][8*splitY+v][8*splitX+u] = cu * cv / 4 * result;
+					DCTFrames[nowFrameCount][8 * splitY + v][8 * splitX + u] = cu * cv / 4 * result;
 				}
 			}
 		}
 	}
-		
-	
 }
-
-/*
-void ICSPFowardDct(int nowFrameCount) {
-	int u, v,y, x;
-	double cu, cv, result, MSE, SUM, PSNR;
-
-		for (v = 0; v < HEIGHT/8; v++)
-		{
-			for (u = 0; u < WIDTH / 8; u++)
-			{
-				result = 0.0;
-				if (u == 0) cu = 1 / sqrt(2);
-				else cu = 1.0;
-				if (v == 0) cv = 1 / sqrt(2);
-				else cv = 1.0;
-				for (y = 0; y < 8; y++)
-				{
-					for (x = 0; x < 8; x++)
-					{
-							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[8*v+y][8*u+x];
-					}
-				}
-				DCTFrames[nowFrameCount][v][u] = cu * cv / 4 * result;
-			}
-		}
-
-}
-*/
 
 void ICSPInverseDct(int nowFrameCount) {
 	int u, v, y, x;
 	double cu, cv, result, MSE, SUM, PSNR;
 	
-	for (int frame = 0; frame < FRAME_MAX; frame++) {
-		for (y = 0; y < HEIGHT; y++)
-		{
-			for (x = 0; x < 8; x++)
+		for (int splitV = 0; splitV < HEIGHT / 8; splitV++) {
+			for (int splitU = 0; splitU < WIDTH / 8; splitU++) {
+			for (y = 0; y < 8; y++)
 			{
-				result = 0.0;
-				for (v = 0; v < 8; v++)
+				for (x = 0; x < 8; x++)
 				{
-					for (u = 0; u <  8; u++)
+					result = 0.0;
+					for (v = 0; v < 8; v++)
 					{
-						if (u == 0) cu = 1 / sqrt(2);
-						else cu = 1.0;
-						if (v == 0) cv = 1 / sqrt(2);
-						else cv = 1.0;
-						result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)DCTFrames[nowFrameCount][y + v][x + u];
+						for (u = 0; u < 8; u++)
+						{
+							if (u == 0) cu = 1 / sqrt(2);
+							else cu = 1.0;
+							if (v == 0) cv = 1 / sqrt(2);
+							else cv = 1.0;
+							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[8 * splitV + v][8 * splitU + u];
+						}
 					}
+					IDCTFrames[nowFrameCount][8 * splitV + y][8 * splitU + x] = result / 4;
 				}
-				IDCTFrames[nowFrameCount][y+v][x+u] = result / 4;
 			}
 		}
 	}
-	
 }
 /*
 int main(void) {
