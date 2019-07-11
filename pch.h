@@ -15,6 +15,7 @@
 #include "ICSPCodec.h"
 #include "ICSPInter.h"
 #include "ICSPDCT.h"
+#include "ICSPQuantization.h"
 #include <tchar.h>
 
 

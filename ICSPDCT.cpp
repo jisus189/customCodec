@@ -90,9 +90,10 @@ void ICSPFowardDct(int nowFrameCount) {
 					else cu = 1.0;
 					if (v == 0) cv = 1 / sqrt(2);
 					else cv = 1.0;
-					for (y = 0; y < 8; y++)
+					for (x = 0; x < 8; x++)
 					{
-						for (x = 0; x < 8; x++)
+						
+						for (y = 0; y < 8; y++)
 						{
 							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[8 * splitY + y][8 * splitX + x];
 						}
@@ -126,7 +127,7 @@ void ICSPInverseDct(int nowFrameCount) {
 							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[8 * splitV + v][8 * splitU + u];
 						}
 					}
-					IDCTFrames[nowFrameCount][8 * splitV + y][8 * splitU + x] = result / 4;
+					DCTFrames[nowFrameCount][8 * splitV + y][8 * splitU + x] = result / 4;
 				}
 			}
 		}

@@ -4,6 +4,8 @@
 #define HEIGHT 288
 #define FRAME_MAX 90
 
+
+
 const int		 BLOCK_SIZE = 16;
 const int		 SERCH_UNIT = 7;
 const int		 SERCH_RANGE = BLOCK_SIZE + SERCH_UNIT + SERCH_UNIT;
@@ -18,14 +20,15 @@ extern unsigned char **frame_no_loss_v;
 
 extern byte pFrame[HEIGHT][WIDTH];
 extern byte cFrame[HEIGHT][WIDTH];
-extern byte rFrame[FRAME_MAX - 1][HEIGHT][WIDTH];
+extern byte rFrame[FRAME_MAX][HEIGHT][WIDTH];
 extern byte DCTFrames[FRAME_MAX][HEIGHT][WIDTH];
 extern byte IDCTFrames[FRAME_MAX][HEIGHT][WIDTH];
 extern byte tempFrame[HEIGHT][WIDTH];
+extern FILE *infile;
 
 
 //void getYUVFile(int inputFrames);
 void initYUV();
 void saveByte(const char * filePath, int caseVal);
-void saveYUV(const char * filePath, float caseUV = 1, int caseVal = 1);
+void saveYUV(const char * filePath, float caseUV = 1);
 //unsigned char** getFrame(const char * filePath);

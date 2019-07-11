@@ -1,8 +1,10 @@
 #include "pch.h"
 
 
-void ReadFrames(const char * filePath, int pIndex, int cIndex)
+void ReadFrames(int pIndex, int cIndex)
 {
+	//전체 오픈은 앞에서하고 두개씩 읽기
+	/*
 	HANDLE hFile;
 	DWORD dwRead;
 	//얻고자 하는 프레임의 시작 부분의 위치 계산
@@ -17,11 +19,31 @@ void ReadFrames(const char * filePath, int pIndex, int cIndex)
 	//SetFilePointer(hFile, cIndex, 0, FILE_END); 이어쓰기
 	ReadFile(hFile, cFrame, FRAME_SIZE, &dwRead, NULL);
 	CloseHandle(hFile);
+	*/
+
+	//fseek(infile, -WIDTH*HEIGHT, SEEK_CUR);
+
+	//for (int i = 0; i < HEIGHT; i++) {
+	//	fread(pFrame[i], 1, WIDTH, infile);
+	//}
+
+
+	if (pIndex == 0) memcpy(pFrame, rFrame[0], sizeof(pFrame));
+	else memcpy(pFrame, cFrame, sizeof(pFrame));
+	//for (int i = 0; i < HEIGHT; i++) {
+	//	for (int j = 0; j < WIDTH; j++)//아래
+	//	{
+	//		printf("%c =%c\n", pFrame[i][j], rFrame[0][i][j]);
+	//	}
+	//}
+	for (int i = 0; i < HEIGHT; i++) {
+		fread(cFrame[i], 1, WIDTH, infile);
+	}
 
 }
 
-void makeFirstRFrame(const char * filePath) {
-
+void makeFirstRFrame() {
+	/*
 	DWORD dwRead;
 	HANDLE hFile;
 
@@ -31,7 +53,19 @@ void makeFirstRFrame(const char * filePath) {
 	ReadFile(hFile, rFrame, FRAME_SIZE, &dwRead, NULL);
 	CloseHandle(hFile);
 	return;
-
+	*/
+	//fseek(infile, 0L, SEEK_SET);
+	//printf("%lf\n",ftell(infile));
+	for (int i = 0; i < HEIGHT; i++) {
+		fread(rFrame[i], 1, WIDTH, infile);
+	}
+	//for (int i = 0; i < HEIGHT; i++) {
+	//			for (int j = 0; j < WIDTH; j++)//아래
+	//			{
+	//				printf("%d %d =%c\n",i,j, rFrame[i][j]);
+	//			}
+	//		}
+	//printf("%lf=n", ftell(infile));
 }
 
 void InitFrames()
@@ -54,14 +88,13 @@ void InitFrames()
 	}
 }
 
-void MotionEstimationExc(const char * filePath, int inputFrames) {
-	makeFirstRFrame(filePath);
-	for (int i = 0; i < inputFrames; i++)
-	{
-		ReadFrames(filePath, i, i + 1);
-		CopyMargin(i + 1);
-		MotionEstimation(i + 1);
-	}
+void MotionEstimationExc(int nowFrameCount) {
+	//makeFirstRFrame();
+	
+	ReadFrames(nowFrameCount, nowFrameCount + 1);
+	CopyMargin(nowFrameCount + 1);
+	MotionEstimation(nowFrameCount + 1);
+	
 }
 
 void CopyMargin(int now)

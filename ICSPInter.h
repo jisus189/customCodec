@@ -1,8 +1,8 @@
 #pragma once
 
-void ReadFrames(const char * filePath,int pIndex, int cIndex);
-void makeFirstRFrame(const char * filePath);
-void MotionEstimationExc(const char * filePath, int inputFrames);
+void ReadFrames(int pIndex, int cIndex);
+void makeFirstRFrame();
+void MotionEstimationExc(int nowFrameCount);
 void CopyMargin(int now);
 void InitFrames();
 void MotionEstimation(int now);
