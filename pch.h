@@ -12,11 +12,14 @@
 // TODO: 여기에 미리 컴파일하려는 헤더 추가
 #include <Windows.h>
 #include <iostream>
+#include <tchar.h>
 #include "ICSPCodec.h"
 #include "ICSPInter.h"
 #include "ICSPDCT.h"
+#include "ICSPReorder.h"
 #include "ICSPQuantization.h"
-#include <tchar.h>
+#include "ICSPDPCM.h"
+
 
 
 #endif //PCH_H

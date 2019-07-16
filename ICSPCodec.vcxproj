@@ -153,13 +153,18 @@
   <ItemGroup>
     <ClInclude Include="ICSPCodec.h" />
     <ClInclude Include="ICSPDCT.h" />
+    <ClInclude Include="ICSPDPCM.h" />
+    <ClInclude Include="ICSPEntropyCoding.h" />
     <ClInclude Include="ICSPInter.h" />
+    <ClInclude Include="ICSPReorder.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ICSPQuantization.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ICSPCodec.cpp" />
     <ClCompile Include="ICSPDCT.cpp" />
+    <ClCompile Include="ICSPDPCM.cpp" />
+    <ClCompile Include="ICSPEntropyCoding.cpp" />
     <ClCompile Include="ICSPInter.cpp" />
     <ClCompile Include="ICSPReorder.cpp" />
     <ClCompile Include="pch.cpp">

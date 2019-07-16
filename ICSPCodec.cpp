@@ -8,7 +8,7 @@ unsigned char **frame_no_loss_y;
 unsigned char **frame_no_loss_u;
 unsigned char **frame_no_loss_v;
 
-const char * initYUV2 = "C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/football_cif(352X288)_90f.yuv";
+const char * inputYUVPath = "C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/football_cif(352X288)_90f.yuv";
 const char * YUVPath = "C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/saveYUV.yuv";
 const char * YPath = "C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/saveY.yuv";
 const char * UPath = "C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/saveU.yuv";
@@ -23,53 +23,63 @@ byte pFrame[HEIGHT][WIDTH];
 byte cFrame[HEIGHT][WIDTH];
 byte rFrame[FRAME_MAX][HEIGHT][WIDTH];
 byte DCTFrames[FRAME_MAX][HEIGHT][WIDTH];
+byte calculatedFrames[FRAME_MAX][HEIGHT][WIDTH];
 byte IDCTFrames[FRAME_MAX][HEIGHT][WIDTH];
 byte tempFrame[HEIGHT][WIDTH];
 
 FILE *infile;
 
-void initYUV() {
-	for (int i = 0; i < FRAME_MAX; i++) {
-		frame_no_loss_y = new unsigned char *[HEIGHT];
-		frame_no_loss_u = new unsigned char *[HEIGHT * 1 / 2];
-		frame_no_loss_v = new unsigned char *[HEIGHT * 1 / 2];
-	}
-	for (int i = 0; i < HEIGHT; i++) {
-		frame_no_loss_y[i] = new unsigned char[WIDTH];
-	}
-	for (int i = 0; i < HEIGHT * 1 / 2; i++) {
-		frame_no_loss_u = new unsigned char *[WIDTH * 1 / 2];
-		frame_no_loss_v = new unsigned char *[WIDTH * 1 / 2];
+DPCMMode ICSPDpcm;
+
+void getYUVFile(int inputFrames) {
+	frame_no_loss_y = new unsigned char *[inputFrames];
+	frame_no_loss_u = new unsigned char *[inputFrames];
+	frame_no_loss_v = new unsigned char *[inputFrames];
+
+	for (int i = 0; i < inputFrames; i++) {
+		frame_no_loss_y[i] = new unsigned char[WIDTH * HEIGHT];
+		frame_no_loss_u[i] = new unsigned char[WIDTH * HEIGHT * 1 / 4];
+		frame_no_loss_v[i] = new unsigned char[WIDTH * HEIGHT * 1 / 4];
 	}
 
+	FILE *infile = fopen(inputYUVPath, "rb");
 
+	if (!infile) {
+		printf("NO FILE");
+		return;
+	}
+	for (int i = 0; i < inputFrames; i++) {
+		fread(frame_no_loss_y[i], 1, WIDTH * HEIGHT, infile);
+		fread(frame_no_loss_u[i], 1, WIDTH * HEIGHT * 1 / 4, infile);
+		fread(frame_no_loss_v[i], 1, WIDTH * HEIGHT * 1 / 4, infile);
+	}
 
-	//fclose(infile);
-	/*
-	FILE *outfile = fopen("C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/saveYUV.yuv", "wb");
-	for (int i = 0; i < FRAME_MAX; i++) {
+	fclose(infile);
+	printf("read SUCCESS\n");
+
+	FILE *outfile = fopen(YPath, "wb");
+    for (int i = 0; i < FRAME_MAX; i++) {
 		fwrite(frame_no_loss_y[i], 1, WIDTH * HEIGHT, outfile);
+	}
+	fclose(outfile);
+	printf("saveY\n");
+
+	FILE *outfile = fopen(UPath, "wb");
+	for (int i = 0; i < FRAME_MAX; i++) {
 		fwrite(frame_no_loss_u[i], 1, WIDTH * HEIGHT * 1 / 4, outfile);
+	}
+	fclose(outfile);
+	printf("saveU\n");
+
+	FILE *outfile = fopen(VPath, "wb");
+	for (int i = 0; i < FRAME_MAX; i++) {
 		fwrite(frame_no_loss_v[i], 1, WIDTH * HEIGHT * 1 / 4, outfile);
 	}
 	fclose(outfile);
-	*/
+	printf("saveV\n");
 }
 
-void getFrame(int frameCount, const char * filePath) {
-	/*
-	HANDLE hFile;
-	DWORD dwRead;
-
-	//얻고자 하는 프레임의 시작 부분의 위치 계산
-	frameCount = frameCount * FRAME_SIZE;
-	hFile = CreateFile(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	SetFilePointer(hFile, frameCount, 0, FILE_BEGIN);
-	ReadFile(hFile, tempFrame, FRAME_SIZE, &dwRead, NULL);
-	CloseHandle(hFile);
-	*/
-
-
+void getFrame(int frameCount) {
 	if (!infile) {
 		printf("NO FILE");
 		return;
@@ -78,31 +88,13 @@ void getFrame(int frameCount, const char * filePath) {
 		fread(tempFrame[i], 1, WIDTH, infile);
 	}
 
-
-
 	printf("SUCCESS\n");
-	/*
-	for (int i = 0; i < HEIGHT * 1 / 2; i++) {
-		fread(frame_no_loss_u[i], 1, WIDTH * 1 / 2, infile);
-	}
-
-	for (int i = 0; i < HEIGHT * 1 / 2; i++) {
-		fread(frame_no_loss_v[i], 1, WIDTH * 1 / 2, infile);
-	}
-	for (int i = 0; i < HEIGHT; i++) {
-		for (int j = 0; j < WIDTH; j++)//아래
-		{
-			printf("%d : %d + %d = %d \n",frameCount,i,j,tempFrame[i][j]);
-		}
-	}
-	*/
 
 }
 
 void saveByte(const char * filePath, int caseVal) {
 	HANDLE hFile;
 	DWORD dwRead;
-
 
 	hFile = CreateFile(filePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -125,7 +117,6 @@ void saveByte(const char * filePath, int caseVal) {
 		}
 	}
 
-
 	CloseHandle(hFile);
 	printf("saved saveMV!\n");
 }
@@ -140,12 +131,7 @@ void saveYUV(const char * filePath, float caseUV) {
 
 	fclose(outfile);
 }
-/*
-	입력값 : 원본 영상, 영상크기(w&h 고정), QP_DC, QP_AC, intra Period, enable
-	flow   : intra period에 따라 처음 부터
-			 1.inter -
-			 2.intra -
-*/
+
 void testDCT() {
 	infile = fopen(YPath, "rb");
 	makeFirstRFrame();
@@ -170,7 +156,7 @@ void testDCT() {
 void testMV() {
 	infile = fopen(YPath, "rb");
 	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
-		getFrame(i_frame, YPath);
+		getFrame(i_frame);
 		ICSPFowardDct(i_frame);
 	}
 	saveYUV(FDCTPath);
@@ -178,53 +164,81 @@ void testMV() {
 
 	infile = fopen(YFDCTPath, "rb");
 	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
-		getFrame(i_frame, YFDCTPath);
+		getFrame(i_frame);
 		ICSPInverseDct(i_frame);
 	}
 	saveYUV(IDCTPath);
 	fclose(infile);
 }
+
+void testDPCM() {
+	int n = 0;
+	for (int i = 0; i < HEIGHT; i++) {
+		for (int j = 0; j < WIDTH; j++)//아래
+		{
+			tempFrame[i][j] = n++;
+			printf("%d	", tempFrame[i][j]);
+		}
+		printf("\n");
+	}
+
+	printf("\n");
+	ICSPDpcmSelector(0, LEFT, PIXEL);
+
+	for (int i = 0; i < HEIGHT; i++) {
+		for (int j = 0; j < WIDTH; j++)//아래
+		{
+			printf("%d	", calculatedFrames[0][i][j]);
+		}
+		printf("\n");
+	}
+}
+void startIntraPrediction() {
+
+}
+
+void startInterPrediction() {
+
+}
+/*
+	입력값 : 원본 영상, 영상크기(w&h 고정), QP_DC, QP_AC, intra Period, enable
+	flow   : intra period에 따라 처음 부터
+			 1.inter -
+			 2.intra -
+*/
+
 int main()
 {
+	//"C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/
+	int intraPeriod=30;
+	//파일명, 크기, QP_DC, QP_AC, intra Period, enable 입력
 
-	//getYUVFile(FRAME_MAX);
+	//YUV 분할 저장
+	getYUVFile(FRAME_MAX);
 
-	//initYUV();
-	infile = fopen(YPath, "rb");
+
+	
 	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
-		getFrame(i_frame, YPath);
+		getFrame(i_frame);
+		//input : tempFrame / output : rFrame
+		if (FRAME_MAX%intraPeriod == 0) {
+			startIntraPrediction();
+		}
+		else {
+			startInterPrediction();
+		}
+
+		//input : rFrame / output : DCTFrame
 		ICSPFowardDct(i_frame);
+		//input : DCTFrame / output : 
+		ICSPQuantize(i_frame);
+		zig_zag_scanning(i_frame);
+		ICSPDpcmSelector(i_frame,MEAN,DC);
+		//entrophy
 	}
 	saveYUV(FDCTPath);
 	fclose(infile);
 
-	infile = fopen(FDCTPath, "rb");
-	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
-		getFrame(i_frame, FDCTPath);
-		ICSPQuantize(i_frame);
-	}
-	saveYUV(QuanPath);
-	fclose(infile);
-
-
-	return 0;
-	infile = fopen(YFDCTPath, "rb");
-	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
-		getFrame(i_frame, YFDCTPath);
-		ICSPInverseDct(i_frame);
-
-	}
-	saveYUV(IDCTPath);
-	fclose(infile);
-	//for (int i_frame = 59; i_frame < FRAME_MAX; i_frame++) {
-	//	for (int i = 0; i < HEIGHT; i++) {
-	//		for (int j = 0; j < WIDTH; j++)//아래
-	//		{
-	//			printf("%d %d %d =%d\n",i_frame,i,j,DCTFrames[i_frame][i][j]);
-	//		}
-	//	}
-	//}
-	//saveByte(, 2);
 
 	/*
 

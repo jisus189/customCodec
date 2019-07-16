@@ -1,31 +1,96 @@
 #include "pch.h"
-/*
-template<class T>
-vector<short> DCTCompressor::zig_zag_matrix(vector<vector<T>> &mat)
+
+#define BLOCK_8 8
+void zig_zag_scanning(int nowFrameCount)
 {
-	vector<T> res;
-	int row = 0, col = 0, i = 0;
+	int n, x, y;
 
-	while (row < mat.size())
-	{
-		res.push_back(mat[row][col]);
+	for (int splitY = 0; splitY < HEIGHT / BLOCK_8; splitY++) {
+		for (int splitX = 0; splitX < WIDTH / BLOCK_8; splitX++) {
+			n = 0;
+			for (int idx = 0, d = 1; idx <= BLOCK_8 * BLOCK_8 - 1; idx++, d *= (-1))
+			{
+				x = splitX * 8;
+				y = splitY * 8;
+				if (idx <= BLOCK_8 - 1)
+				{
+					if (d == 1)
+					{
+						y += idx;
+					}
+					else
+					{
+						x += idx;
+					}
 
-		if (row == mat.size() - 1)
-		{
-			row = col + 1;
-			col = mat.size() - 1;
-		}
-		else if (col == 0)
-		{
-			col = row + 1;
-			row = 0;
-		}
-		else
-		{
-			row++;
-			col--;
+				}
+				else
+				{
+					if (d == 1)
+					{
+						x += idx - (BLOCK_8 - 1);
+						y += BLOCK_8 - 1;
+					}
+					else
+					{
+						y += idx - (BLOCK_8 - 1);
+						x += BLOCK_8 - 1;
+					}
+
+				}
+
+				for (; x >= splitX * 8 && y >= splitY * 8 && x < (splitX + 1) * 8 && y < (splitY + 1) * 8; x = x + d, y = y - d)
+				{
+					calculatedFrames[nowFrameCount][y][x] = tempFrame[y + n % BLOCK_8][x + n / BLOCK_8];
+					n++;
+				}
+			}
 		}
 	}
-	return res;
 }
-*/
+
+void unzig_zag_scanning(int nowFrameCount)
+{
+	int n, x, y;
+	for (int splitY = 0; splitY < HEIGHT / 8; splitY++) {
+		for (int splitX = 0; splitX < WIDTH / 8; splitX++) {
+			n = 0;
+			for (int idx = 0, d = 1; idx <= BLOCK_8 * BLOCK_8 - 1; idx++, d *= (-1))
+			{
+				x = splitX * 8;
+				y = splitY * 8;
+				if (idx <= BLOCK_8 - 1)
+				{
+					if (d == 1)
+					{
+						y += idx;						
+					}
+					else
+					{
+						x += idx;
+					}
+				}
+				else
+				{
+					if (d == 1)
+					{
+						x += idx - (BLOCK_8 - 1);
+						y += BLOCK_8 - 1;
+					}
+					else
+					{
+						y += idx - (BLOCK_8 - 1);
+						x += BLOCK_8 - 1;
+					}
+				}
+
+				for (; x >= splitX * 8 && y >= splitY * 8 && x < (splitX + 1) * 8 && y < (splitY + 1) * 8; x = x + d, y = y - d)
+				{
+					calculatedFrames[nowFrameCount][y + n % BLOCK_8][x + n / BLOCK_8]=tempFrame[y][x];//tempFrame[n%WIDTH][n/HEIGHT];
+					n++;
+				}
+			}
+		}
+	}
+	
+}

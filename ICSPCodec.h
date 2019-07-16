@@ -1,11 +1,11 @@
 #pragma once
 
-#define WIDTH 352
-#define HEIGHT 288
+#define WIDTH 8
+#define HEIGHT 8
 #define FRAME_MAX 90
 
 
-
+//파라미터로 받을 것 frame수, 
 const int		 BLOCK_SIZE = 16;
 const int		 SERCH_UNIT = 7;
 const int		 SERCH_RANGE = BLOCK_SIZE + SERCH_UNIT + SERCH_UNIT;
@@ -22,13 +22,26 @@ extern byte pFrame[HEIGHT][WIDTH];
 extern byte cFrame[HEIGHT][WIDTH];
 extern byte rFrame[FRAME_MAX][HEIGHT][WIDTH];
 extern byte DCTFrames[FRAME_MAX][HEIGHT][WIDTH];
+extern byte calculatedFrames[FRAME_MAX][HEIGHT][WIDTH];
 extern byte IDCTFrames[FRAME_MAX][HEIGHT][WIDTH];
 extern byte tempFrame[HEIGHT][WIDTH];
 extern FILE *infile;
 
+typedef enum {
+	zeroCount,
+	MEDIAN,
+	MEAN,
+	LEFT,
+	MEDIAN_R,
+	MEAN_R,
+	LEFT_R,
+	DC,
+	PIXEL
+} DPCMMode;
 
-//void getYUVFile(int inputFrames);
-void initYUV();
+extern DPCMMode ICSPDpcm;
+
+void getYUVFile(int inputFrames);
 void saveByte(const char * filePath, int caseVal);
 void saveYUV(const char * filePath, float caseUV = 1);
 //unsigned char** getFrame(const char * filePath);
