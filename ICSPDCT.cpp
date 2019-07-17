@@ -5,7 +5,6 @@
 #include <math.h> 
 #define PI 3.141592654 
 
-#define N 8
 
 unsigned char **UCalloc(int width, int height)
 {
@@ -78,27 +77,27 @@ void ICSPFowardDct(int nowFrameCount) {
 	double cu, cv, result, MSE, SUM, PSNR;
 	// 8x8 split
 	
-		for (int splitY = 0; splitY < HEIGHT / 8; splitY++) {
-			for (int splitX = 0; splitX < WIDTH / 8; splitX++) {
+		for (int splitY = 0; splitY < HEIGHT / BLOCK_8; splitY++) {
+			for (int splitX = 0; splitX < WIDTH / BLOCK_8; splitX++) {
 			// u,v¿¡ 
-			for (v = 0; v < 8; v++)
+			for (v = 0; v < BLOCK_8; v++)
 			{
-				for (u = 0; u < 8; u++)
+				for (u = 0; u < BLOCK_8; u++)
 				{
 					result = 0.0;
 					if (u == 0) cu = 1 / sqrt(2);
 					else cu = 1.0;
 					if (v == 0) cv = 1 / sqrt(2);
 					else cv = 1.0;
-					for (x = 0; x < 8; x++)
+					for (x = 0; x < BLOCK_8; x++)
 					{
 						
-						for (y = 0; y < 8; y++)
+						for (y = 0; y < BLOCK_8; y++)
 						{
-							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[8 * splitY + y][8 * splitX + x];
+							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[BLOCK_8 * splitY + y][BLOCK_8 * splitX + x];
 						}
 					}
-					DCTFrames[nowFrameCount][8 * splitY + v][8 * splitX + u] = cu * cv / 4 * result;
+					DCTFrames[nowFrameCount][BLOCK_8 * splitY + v][BLOCK_8 * splitX + u] = cu * cv / 4 * result;
 				}
 			}
 		}
@@ -110,27 +109,27 @@ void ICSPFowardDct_test(int nowFrameCount) {
 	double cu, cv, result, MSE, SUM, PSNR;
 	// 8x8 split
 
-	for (int splitY = 0; splitY < HEIGHT / 8; splitY++) {
-		for (int splitX = 0; splitX < WIDTH / 8; splitX++) {
+	for (int splitY = 0; splitY < HEIGHT / BLOCK_8; splitY++) {
+		for (int splitX = 0; splitX < WIDTH / BLOCK_8; splitX++) {
 			// u,v¿¡ 
-			for (v = 0; v < 8; v++)
+			for (v = 0; v < BLOCK_8; v++)
 			{
-				for (u = 0; u < 8; u++)
+				for (u = 0; u < BLOCK_8; u++)
 				{
 					result = 0.0;
 					if (u == 0) cu = 1 / sqrt(2);
 					else cu = 1.0;
 					if (v == 0) cv = 1 / sqrt(2);
 					else cv = 1.0;
-					for (x = 0; x < 8; x++)
+					for (x = 0; x < BLOCK_8; x++)
 					{
 
-						for (y = 0; y < 8; y++)
+						for (y = 0; y < BLOCK_8; y++)
 						{
-							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x];
+							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)DCTFrames[nowFrameCount][BLOCK_8 * splitY + y][BLOCK_8 * splitX + x];
 						}
 					}
-					DCTFrames[nowFrameCount][8 * splitY + v][8 * splitX + u] = cu * cv / 4 * result;
+					DCTFrames[nowFrameCount][BLOCK_8 * splitY + v][BLOCK_8 * splitX + u] = cu * cv / 4 * result;
 				}
 			}
 		}
@@ -141,25 +140,25 @@ void ICSPInverseDct(int nowFrameCount) {
 	int u, v, y, x;
 	double cu, cv, result, MSE, SUM, PSNR;
 	
-		for (int splitV = 0; splitV < HEIGHT / 8; splitV++) {
-			for (int splitU = 0; splitU < WIDTH / 8; splitU++) {
-			for (x = 0; x < 8; x++)
+		for (int splitV = 0; splitV < HEIGHT / BLOCK_8; splitV++) {
+			for (int splitU = 0; splitU < WIDTH / BLOCK_8; splitU++) {
+			for (x = 0; x < BLOCK_8; x++)
 			{
-				for (y = 0; y < 8; y++)
+				for (y = 0; y < BLOCK_8; y++)
 				{
 					result = 0.0;
-					for (v = 0; v < 8; v++)
+					for (v = 0; v < BLOCK_8; v++)
 					{
-						for (u = 0; u < 8; u++)
+						for (u = 0; u < BLOCK_8; u++)
 						{
 							if (u == 0) cu = 1 / sqrt(2);
 							else cu = 1.0;
 							if (v == 0) cv = 1 / sqrt(2);
 							else cv = 1.0;
-							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[8 * splitV + v][8 * splitU + u];
+							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[BLOCK_8 * splitV + v][BLOCK_8 * splitU + u];
 						}
 					}
-					DCTFrames[nowFrameCount][8 * splitV + y][8 * splitU + x] = result / 4;
+					DCTFrames[nowFrameCount][BLOCK_8 * splitV + y][BLOCK_8 * splitU + x] = result / 4;
 				}
 			}
 		}
@@ -170,25 +169,25 @@ void ICSPInverseDct_test(int nowFrameCount) {
 	int u, v, y, x;
 	double cu, cv, result, MSE, SUM, PSNR;
 
-	for (int splitV = 0; splitV < HEIGHT / 8; splitV++) {
-		for (int splitU = 0; splitU < WIDTH / 8; splitU++) {
-			for (x = 0; x < 8; x++)
+	for (int splitV = 0; splitV < HEIGHT / BLOCK_8; splitV++) {
+		for (int splitU = 0; splitU < WIDTH / BLOCK_8; splitU++) {
+			for (x = 0; x < BLOCK_8; x++)
 			{
-				for (y = 0; y < 8; y++)
+				for (y = 0; y < BLOCK_8; y++)
 				{
 					result = 0.0;
-					for (v = 0; v < 8; v++)
+					for (v = 0; v < BLOCK_8; v++)
 					{
-						for (u = 0; u < 8; u++)
+						for (u = 0; u < BLOCK_8; u++)
 						{
 							if (u == 0) cu = 1 / sqrt(2);
 							else cu = 1.0;
 							if (v == 0) cv = 1 / sqrt(2);
 							else cv = 1.0;
-							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[8 * splitV + v][8 * splitU + u];
+							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[BLOCK_8 * splitV + v][BLOCK_8 * splitU + u];
 						}
 					}
-					DCTFrames[nowFrameCount][8 * splitV + y][8 * splitU + x] = result / 4;
+					DCTFrames[nowFrameCount][BLOCK_8 * splitV + y][BLOCK_8 * splitU + x] = result / 4;
 				}
 			}
 		}

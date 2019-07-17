@@ -19,6 +19,7 @@
 #include "ICSPReorder.h"
 #include "ICSPQuantization.h"
 #include "ICSPDPCM.h"
+#include "ICSPIntra.h"
 
 
 

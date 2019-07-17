@@ -30,6 +30,7 @@ byte tempFrame[HEIGHT][WIDTH];
 FILE *infile;
 
 DPCMMode ICSPDpcm;
+IntraMode ICSPIntra;
 
 void getYUVFile(int inputFrames) {
 	frame_no_loss_y = new unsigned char *[inputFrames];
@@ -193,12 +194,12 @@ void testDPCM() {
 		printf("\n");
 	}
 }
-void startIntraPrediction() {
-
+void startIntraPrediction(int nowFrame, int mode) {
+	ICSPIntraMode(nowFrame, VERTICAL);
 }
 
-void startInterPrediction() {
-
+void startInterPrediction(int nowFrame) {
+	MotionEstimationExc(nowFrame);
 }
 /*
 	입력값 : 원본 영상, 영상크기(w&h 고정), QP_DC, QP_AC, intra Period, enable
@@ -209,23 +210,24 @@ void startInterPrediction() {
 
 int main()
 {
+
 	//"C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/
 	int intraPeriod=30;
-	//파일명, 크기, QP_DC, QP_AC, intra Period, enable 입력
+	//파일명, 크기, QP_DC, QP_AC, intra Period, enable 입력 (MFC)
 
 	//YUV 분할 저장
 	getYUVFile(FRAME_MAX);
 
 
-	
+	infile = fopen(YPath,"rb");
 	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
 		getFrame(i_frame);
-		//input : tempFrame / output : rFrame
+		//input : tempFrame / output : rFrame[i]
 		if (FRAME_MAX%intraPeriod == 0) {
-			startIntraPrediction();
+			startIntraPrediction(i_frame,HORIZENTAL);
 		}
 		else {
-			startInterPrediction();
+			startInterPrediction(i_frame);
 		}
 
 		//input : rFrame / output : DCTFrame
@@ -235,6 +237,7 @@ int main()
 		zig_zag_scanning(i_frame);
 		ICSPDpcmSelector(i_frame,MEAN,DC);
 		//entrophy
+		//stream header
 	}
 	saveYUV(FDCTPath);
 	fclose(infile);

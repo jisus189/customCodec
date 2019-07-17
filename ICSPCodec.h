@@ -3,7 +3,7 @@
 #define WIDTH 8
 #define HEIGHT 8
 #define FRAME_MAX 90
-
+#define BLOCK_8 8
 
 //파라미터로 받을 것 frame수, 
 const int		 BLOCK_SIZE = 16;
@@ -27,19 +27,32 @@ extern byte IDCTFrames[FRAME_MAX][HEIGHT][WIDTH];
 extern byte tempFrame[HEIGHT][WIDTH];
 extern FILE *infile;
 
+
+typedef enum {
+	VERTICAL,
+	HORIZENTAL,
+	DC_MEAN
+} IntraMode;
+
+
 typedef enum {
 	zeroCount,
+	DC,
+	PIXEL,
 	MEDIAN,
 	MEAN,
 	LEFT,
 	MEDIAN_R,
 	MEAN_R,
 	LEFT_R,
-	DC,
-	PIXEL
+	DC_MEDIAN,
+	PIXEL_MEDIAN,
+	DC_MEAN,
+	PIXEL_MEAN
 } DPCMMode;
 
 extern DPCMMode ICSPDpcm;
+extern IntraMode ICSPIntra;
 
 void getYUVFile(int inputFrames);
 void saveByte(const char * filePath, int caseVal);
