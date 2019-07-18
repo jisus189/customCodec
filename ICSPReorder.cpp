@@ -41,7 +41,7 @@ void zig_zag_scanning(int nowFrameCount)
 
 				for (; x >= splitX * 8 && y >= splitY * 8 && x < (splitX + 1) * 8 && y < (splitY + 1) * 8; x = x + d, y = y - d)
 				{
-					calculatedFrames[nowFrameCount][y][x] = tempFrame[y + n % BLOCK_8][x + n / BLOCK_8];
+					tempFrame[y][x] = byProductFrame[y + n % BLOCK_8][x + n / BLOCK_8];
 					n++;
 				}
 			}
@@ -86,7 +86,7 @@ void unzig_zag_scanning(int nowFrameCount)
 
 				for (; x >= splitX * 8 && y >= splitY * 8 && x < (splitX + 1) * 8 && y < (splitY + 1) * 8; x = x + d, y = y - d)
 				{
-					calculatedFrames[nowFrameCount][y + n % BLOCK_8][x + n / BLOCK_8]=tempFrame[y][x];//tempFrame[n%WIDTH][n/HEIGHT];
+					tempFrame[y + n % BLOCK_8][x + n / BLOCK_8]=byProductFrame[y][x];//byProductFrame[n%WIDTH][n/HEIGHT];
 					n++;
 				}
 			}

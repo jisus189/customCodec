@@ -232,14 +232,21 @@ int main()
 			startInterPrediction(i_frame);
 		}
 
-		//input : rFrame / output : DCTFrame
+		//input : rFrame / output : tempFrame
 		ICSPFowardDct(i_frame);
-		//input : DCTFrame / output :quantizationFrame
+
+		//input : tempFrame / output :byProductFrame
 		ICSPQuantize(i_frame);
 
+		//input : byProductFrame / input : tempFrame 
 		zig_zag_scanning(i_frame);
+
+		//input : tempFrame / output :byProductFrame
 		ICSPDpcmSelector(i_frame,MEAN,DC);
-		//entrophy
+
+		//input : byProductFrame / input : tempFrame 
+		ICSPEntropyEncode(i_frame);
+
 		//stream header
 	}
 	saveYUV(FDCTPath);

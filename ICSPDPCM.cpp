@@ -7,11 +7,11 @@ using namespace std;
 
 byte DCBlock[HEIGHT / BLOCK_8][WIDTH / BLOCK_8]; 
 
-//tempFrame을 읽은 후에!
+//byProductFrame을 읽은 후에!
 void ICSPDpcmSelector(int nowFrameCount, int mode, int stage) {
 	if (stage == DC) {
 		makeDCBlock();
-		memcpy(calculatedFrames[nowFrameCount], tempFrame, sizeof(tempFrame));
+		memcpy(tempFrame, byProductFrame, sizeof(byProductFrame));
 	}
 	//블록 나눔
 	for (int splitY = 0; splitY < HEIGHT / BLOCK_8; splitY++) {
@@ -26,7 +26,7 @@ void ICSPDpcmSelector(int nowFrameCount, int mode, int stage) {
 void makeDCBlock() {
 	for (int splitY = 0; splitY < HEIGHT / BLOCK_8; splitY++) {
 		for (int splitX = 0; splitX < WIDTH / BLOCK_8; splitX++) {
-			DCBlock[splitY][splitX] = tempFrame[splitY*BLOCK_8][splitX*BLOCK_8];
+			DCBlock[splitY][splitX] = byProductFrame[splitY*BLOCK_8][splitX*BLOCK_8];
 		}
 	}
 }
@@ -66,35 +66,35 @@ double calculatedValue(int posY, int posX, int maxX, int maxY, int mode, int tar
 		}
 	}
 	else if (target == PIXEL) {
-		/*0*/tempVector.push_back(tempFrame[posY][posX]);
+		/*0*/tempVector.push_back(byProductFrame[posY][posX]);
 		//맨 왼쪽이 아닐 경우
 		if (posX - 1 > 0) {
-			/*1*/tempVector.push_back(tempFrame[posY][posX - 1]);
+			/*1*/tempVector.push_back(byProductFrame[posY][posX - 1]);
 			if (posY + 1 < maxY) {
-				/*2*/tempVector.push_back(tempFrame[posY+1][posX - 1]);
-				/*3*/tempVector.push_back(tempFrame[posY + 1][posX]);
+				/*2*/tempVector.push_back(byProductFrame[posY+1][posX - 1]);
+				/*3*/tempVector.push_back(byProductFrame[posY + 1][posX]);
 				/*4*/
 				if (posX + 1 < maxX) {
-					tempVector.push_back(tempFrame[posY + 1][posX + 1]);
+					tempVector.push_back(byProductFrame[posY + 1][posX + 1]);
 				}
 				else {
-					tempVector.push_back(tempFrame[posY + 1][posX-1]);
+					tempVector.push_back(byProductFrame[posY + 1][posX-1]);
 				}
 			}
 			else {
 				//맨 윗줄일 경우 left 3개로 대체
-				/*1*/tempVector.push_back(tempFrame[posY][posX - 1]);
-				/*2*/tempVector.push_back(tempFrame[posY][posX - 1]);
-				/*3*/tempVector.push_back(tempFrame[posY][posX - 1]);
-				/*4*/tempVector.push_back(tempFrame[posY][posX - 1]);
+				/*1*/tempVector.push_back(byProductFrame[posY][posX - 1]);
+				/*2*/tempVector.push_back(byProductFrame[posY][posX - 1]);
+				/*3*/tempVector.push_back(byProductFrame[posY][posX - 1]);
+				/*4*/tempVector.push_back(byProductFrame[posY][posX - 1]);
 			}
 		}
 		else if (posX - 1 < 0) {
 			//맨 왼쪽일 경우
-			/*1*/tempVector.push_back(tempFrame[posY + 1][posX]);
-			/*2*/tempVector.push_back(tempFrame[posY + 1][posX]);
-			/*3*/tempVector.push_back(tempFrame[posY + 1][posX]);
-			/*4*/tempVector.push_back(tempFrame[posY + 1][posX + 1]);
+			/*1*/tempVector.push_back(byProductFrame[posY + 1][posX]);
+			/*2*/tempVector.push_back(byProductFrame[posY + 1][posX]);
+			/*3*/tempVector.push_back(byProductFrame[posY + 1][posX]);
+			/*4*/tempVector.push_back(byProductFrame[posY + 1][posX + 1]);
 		}
 	}
 	if (mode == MEAN) {
@@ -119,28 +119,28 @@ void medianPrediction(int nowFrameCount, int startY, int startX, int stage){
 		startX /=  BLOCK_8;
 		startY /=  BLOCK_8;
 		for (y = startY, x = startX; y >= startY && y < startY + BLOCK_8; y++) {
-			calculatedFrames[nowFrameCount][y* BLOCK_8][startX* BLOCK_8] = predictedVal;
+			tempFrame[y* BLOCK_8][startX* BLOCK_8] = predictedVal;
 			if (y != startY) {
-				calculatedFrames[nowFrameCount][y* BLOCK_8][startX* BLOCK_8] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
+				tempFrame[y* BLOCK_8][startX* BLOCK_8] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
 			}
 			//x의 두번째부터  수행
 			for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 			{
-				calculatedFrames[nowFrameCount][y* BLOCK_8][x* BLOCK_8] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
+				tempFrame[y* BLOCK_8][x* BLOCK_8] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
 			}
 		}
 	}
 	else {
 		predictedVal = 128;
 		for (y = startY, x = startX; y >= startY && y < startY + BLOCK_8; y++) {
-			calculatedFrames[nowFrameCount][y][startX] = predictedVal;
+			tempFrame[y][startX] = predictedVal;
 			if (y != startY) {
-				calculatedFrames[nowFrameCount][y][startX] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
+				tempFrame[y][startX] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
 			}
 			//x의 두번째부터 수행
 			for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 			{
-				calculatedFrames[nowFrameCount][y][x] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
+				tempFrame[y][x] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
 			}
 		}
 	}
@@ -153,14 +153,14 @@ void medianPrediction_R(int nowFrameCount, int startY, int startX, int stage) {
 	if (stage == DC) predictedVal = 1024;
 	else predictedVal = 128;
 	for (y = startY; y >= startY && y < startY + BLOCK_8; y++) {
-		calculatedFrames[nowFrameCount][y][startX] = predictedVal;
+		tempFrame[y][startX] = predictedVal;
 		if (y != startY) {
-			calculatedFrames[nowFrameCount][y][startX] = 1111;
+			tempFrame[y][startX] = 1111;
 		}
 		//x의 두번째부터  수행
 		for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 		{
-			calculatedFrames[nowFrameCount][y][x] = 11111;
+			tempFrame[y][x] = 11111;
 		}
 	}
 }
@@ -173,28 +173,28 @@ void meanPrediction(int nowFrameCount, int startY, int startX, int stage) {
 		startX /= BLOCK_8;
 		startY /= BLOCK_8;
 		for (y = startY, x = startX; y >= startY && y < startY + BLOCK_8; y++) {
-			calculatedFrames[nowFrameCount][y* BLOCK_8][startX* BLOCK_8] = predictedVal;
+			tempFrame[y* BLOCK_8][startX* BLOCK_8] = predictedVal;
 			if (y != startY) {
-				calculatedFrames[nowFrameCount][y* BLOCK_8][startX* BLOCK_8] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEAN, stage);
+				tempFrame[y* BLOCK_8][startX* BLOCK_8] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEAN, stage);
 			}
 			//x의 두번째부터  수행
 			for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 			{
-				calculatedFrames[nowFrameCount][y* BLOCK_8][x* BLOCK_8] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEAN, stage);
+				tempFrame[y* BLOCK_8][x* BLOCK_8] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEAN, stage);
 			}
 		}
 	}
 	else {
 		predictedVal = 128;
 		for (y = startY; y >= startY && y < startY + BLOCK_8; y++) {
-			calculatedFrames[nowFrameCount][y][startX] = predictedVal;
+			tempFrame[y][startX] = predictedVal;
 			if (y != startY) {
-				calculatedFrames[nowFrameCount][y][startX] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEAN, stage);
+				tempFrame[y][startX] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEAN, stage);
 			}
 			//x의 두번째부터  수행
 			for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 			{
-				calculatedFrames[nowFrameCount][y][x] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEAN, stage);
+				tempFrame[y][x] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEAN, stage);
 			}
 		}
 	}
@@ -206,14 +206,14 @@ void meanPrediction_R(int nowFrameCount, int startY, int startX, int stage) {
 	if (stage == DC) predictedVal = 1024;
 	else predictedVal = 128;
 	for (y = startY; y >= startY && y < startY + BLOCK_8; y++) {
-		calculatedFrames[nowFrameCount][y][startX] = predictedVal;
+		tempFrame[y][startX] = predictedVal;
 		if (y != startY) {
-			calculatedFrames[nowFrameCount][y][startX] = 1111;
+			tempFrame[y][startX] = 1111;
 		}
 		//x의 두번째부터  수행
 		for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 		{
-			calculatedFrames[nowFrameCount][y][x] = 11111;
+			tempFrame[y][x] = 11111;
 		}
 	}
 }
@@ -227,12 +227,12 @@ void leftPrediction(int nowFrameCount, int startY, int startX, int stage) {
 			for (startX = 0; startX < WIDTH / BLOCK_8* BLOCK_8; startX++) {
 				//맨 처음이고 0이 아닐 경우 위 프레임에서 뺌
 				for (y = startY; y >= startY && y < startY + BLOCK_8; y++) {
-					calculatedFrames[nowFrameCount][y*BLOCK_8][startX*BLOCK_8] = DCBlock[y][startX];
-					if (y != startY) calculatedFrames[nowFrameCount][y*BLOCK_8][startX*BLOCK_8] = DCBlock[y][startX] - DCBlock[y - 1][startX];
+					tempFrame[y*BLOCK_8][startX*BLOCK_8] = DCBlock[y][startX];
+					if (y != startY) tempFrame[y*BLOCK_8][startX*BLOCK_8] = DCBlock[y][startX] - DCBlock[y - 1][startX];
 					//x의 두번째부터  수행
 					for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 					{
-						calculatedFrames[nowFrameCount][y*BLOCK_8][x*BLOCK_8] = DCBlock[y][x] - DCBlock[y][x - 1];
+						tempFrame[y*BLOCK_8][x*BLOCK_8] = DCBlock[y][x] - DCBlock[y][x - 1];
 					}
 				}
 			}
@@ -241,12 +241,12 @@ void leftPrediction(int nowFrameCount, int startY, int startX, int stage) {
 	else if (stage == PIXEL) {
 		//맨 처음이고 0이 아닐 경우 위 프레임에서 뺌
 		for (y = startY; y >= startY && y < startY + BLOCK_8; y++) {
-			calculatedFrames[nowFrameCount][y][startX] = tempFrame[y][startX];
-			if (y != startY) calculatedFrames[nowFrameCount][y][startX] = tempFrame[y][startX] - tempFrame[y - 1][startX];
+			tempFrame[y][startX] = byProductFrame[y][startX];
+			if (y != startY) tempFrame[y][startX] = byProductFrame[y][startX] - byProductFrame[y - 1][startX];
 			//x의 두번째부터  수행
 			for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 			{
-				calculatedFrames[nowFrameCount][y][x] = tempFrame[y][x] - tempFrame[y][x - 1];
+				tempFrame[y][x] = byProductFrame[y][x] - byProductFrame[y][x - 1];
 			}
 		}
 	}
@@ -260,12 +260,12 @@ void leftPrediction_R(int nowFrameCount, int startY, int startX, int target) {
 	else if (target == PIXEL) {
 		//맨 처음이고 0이 아닐 경우 위 프레임에서 뺌
 		for (y = startY; y >= startY && y < startY + BLOCK_8; y++) {
-			calculatedFrames[nowFrameCount][y][startX] = tempFrame[y][startX];
-			if (y != startY) calculatedFrames[nowFrameCount][y][startX] = tempFrame[y][startX] - tempFrame[y - 1][startX];
+			tempFrame[y][startX] = byProductFrame[y][startX];
+			if (y != startY) tempFrame[y][startX] = byProductFrame[y][startX] - byProductFrame[y - 1][startX];
 			//x의 두번째부터  수행
 			for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 			{
-				calculatedFrames[nowFrameCount][y][x] = tempFrame[y][x] - tempFrame[y][x - 1];
+				tempFrame[y][x] = byProductFrame[y][x] - byProductFrame[y][x - 1];
 			}
 		}
 	}

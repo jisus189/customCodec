@@ -93,10 +93,10 @@ void ICSPFowardDct(int nowFrameCount) {
 					{
 						for (y = 0; y < BLOCK_8; y++)
 						{
-							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[BLOCK_8 * splitY + y][BLOCK_8 * splitX + x];
+							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)rFrame[nowFrameCount][BLOCK_8 * splitY + y][BLOCK_8 * splitX + x];
 						}
 					}
-					DCTFrames[nowFrameCount][BLOCK_8 * splitY + v][BLOCK_8 * splitX + u] = cu * cv / 4 * result;
+					tempFrame[BLOCK_8 * splitY + v][BLOCK_8 * splitX + u] = cu * cv / 4 * result;
 				}
 			}
 		}
@@ -125,10 +125,10 @@ void ICSPFowardDct_test(int nowFrameCount) {
 
 						for (y = 0; y < BLOCK_8; y++)
 						{
-							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)DCTFrames[nowFrameCount][BLOCK_8 * splitY + y][BLOCK_8 * splitX + x];
+							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[BLOCK_8 * splitY + y][BLOCK_8 * splitX + x];
 						}
 					}
-					DCTFrames[nowFrameCount][BLOCK_8 * splitY + v][BLOCK_8 * splitX + u] = cu * cv / 4 * result;
+					tempFrame[BLOCK_8 * splitY + v][BLOCK_8 * splitX + u] = cu * cv / 4 * result;
 				}
 			}
 		}
@@ -154,10 +154,10 @@ void ICSPInverseDct(int nowFrameCount) {
 							else cu = 1.0;
 							if (v == 0) cv = 1 / sqrt(2);
 							else cv = 1.0;
-							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[BLOCK_8 * splitV + v][BLOCK_8 * splitU + u];
+							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)rFrame[nowFrameCount][BLOCK_8 * splitV + v][BLOCK_8 * splitU + u];
 						}
 					}
-					DCTFrames[nowFrameCount][BLOCK_8 * splitV + y][BLOCK_8 * splitU + x] = result / 4;
+					tempFrame[BLOCK_8 * splitV + y][BLOCK_8 * splitU + x] = result / 4;
 				}
 			}
 		}
@@ -183,10 +183,10 @@ void ICSPInverseDct_test(int nowFrameCount) {
 							else cu = 1.0;
 							if (v == 0) cv = 1 / sqrt(2);
 							else cv = 1.0;
-							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[BLOCK_8 * splitV + v][BLOCK_8 * splitU + u];
+							result += cu * cv * cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)rFrame[nowFrameCount][BLOCK_8 * splitV + v][BLOCK_8 * splitU + u];
 						}
 					}
-					DCTFrames[nowFrameCount][BLOCK_8 * splitV + y][BLOCK_8 * splitU + x] = result / 4;
+					tempFrame[BLOCK_8 * splitV + y][BLOCK_8 * splitU + x] = result / 4;
 				}
 			}
 		}

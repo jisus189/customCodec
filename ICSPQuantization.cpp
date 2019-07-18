@@ -31,8 +31,8 @@ void ICSPQuantize(int nowFrameCount) {
 			{
 				for (x = 0; x < 8; x++)
 				{
-					DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x] = round((tempFrame[8 * splitY + y][8 * splitX + x] / 16));
-					printf("%d ", DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x]);
+					tempFrame[8 * splitY + y][8 * splitX + x] = round((byProductFrame[8 * splitY + y][8 * splitX + x] / 16));
+					printf("%d ", tempFrame[8 * splitY + y][8 * splitX + x]);
 				}
 				printf("\n");
 			}
@@ -53,7 +53,7 @@ void ICSPInverseQuantization(int nowFrameCount) {
 			{
 				for (x = 0; x < 8; x++)			
 				{
-					DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x] =tempFrame[8 * splitY + y][8 * splitX + x] * 16;
+					tempFrame[8 * splitY + y][8 * splitX + x] =byProductFrame[8 * splitY + y][8 * splitX + x] * 16;
 				}
 			}
 		}
@@ -72,8 +72,8 @@ void ICSPQuantize(int nowFrameCount) {
 			{
 				for (x = 0; x < 8; x++)
 				{
-					DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x] = round((tempFrame[8 * splitY + y][8 * splitX + x] / 16));
-					printf("%d ", DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x]);
+					tempFrame[8 * splitY + y][8 * splitX + x] = round((byProductFrame[8 * splitY + y][8 * splitX + x] / 16));
+					printf("%d ", tempFrame[8 * splitY + y][8 * splitX + x]);
 				}
 				printf("\n");
 			}
@@ -94,7 +94,7 @@ void ICSPInverseQuantization(int nowFrameCount) {
 			{
 				for (x = 0; x < 8; x++)
 				{
-					DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x] =tempFrame[8 * splitY + y][8 * splitX + x] * 16;
+					tempFrame[8 * splitY + y][8 * splitX + x] =byProductFrame[8 * splitY + y][8 * splitX + x] * 16;
 				}
 			}
 		}
