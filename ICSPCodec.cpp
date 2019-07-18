@@ -2,6 +2,7 @@
 //
 
 #include "pch.h"
+#include <iostream>
 
 unsigned char **frame_no_loss_yuv;
 unsigned char **frame_no_loss_y;
@@ -23,9 +24,11 @@ byte pFrame[HEIGHT][WIDTH];
 byte cFrame[HEIGHT][WIDTH];
 byte rFrame[FRAME_MAX][HEIGHT][WIDTH];
 byte DCTFrames[FRAME_MAX][HEIGHT][WIDTH];
+byte quantizationFrame[FRAME_MAX][HEIGHT][WIDTH];
 byte calculatedFrames[FRAME_MAX][HEIGHT][WIDTH];
 byte IDCTFrames[FRAME_MAX][HEIGHT][WIDTH];
 byte tempFrame[HEIGHT][WIDTH];
+byte byProductFrame[HEIGHT][WIDTH];
 
 FILE *infile;
 
@@ -65,14 +68,15 @@ void getYUVFile(int inputFrames) {
 	fclose(outfile);
 	printf("saveY\n");
 
-	FILE *outfile = fopen(UPath, "wb");
+	outfile = fopen(UPath, "wb");
 	for (int i = 0; i < FRAME_MAX; i++) {
 		fwrite(frame_no_loss_u[i], 1, WIDTH * HEIGHT * 1 / 4, outfile);
 	}
 	fclose(outfile);
 	printf("saveU\n");
 
-	FILE *outfile = fopen(VPath, "wb");
+	outfile = fopen(VPath, "wb");
+	outfile = fopen(VPath, "wb");
 	for (int i = 0; i < FRAME_MAX; i++) {
 		fwrite(frame_no_loss_v[i], 1, WIDTH * HEIGHT * 1 / 4, outfile);
 	}
@@ -195,7 +199,7 @@ void testDPCM() {
 	}
 }
 void startIntraPrediction(int nowFrame, int mode) {
-	ICSPIntraMode(nowFrame, VERTICAL);
+	ICSPIntraMode(nowFrame, mode);
 }
 
 void startInterPrediction(int nowFrame) {
@@ -210,7 +214,6 @@ void startInterPrediction(int nowFrame) {
 
 int main()
 {
-
 	//"C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/
 	int intraPeriod=30;
 	//파일명, 크기, QP_DC, QP_AC, intra Period, enable 입력 (MFC)
@@ -218,12 +221,11 @@ int main()
 	//YUV 분할 저장
 	getYUVFile(FRAME_MAX);
 
-
 	infile = fopen(YPath,"rb");
 	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
 		getFrame(i_frame);
 		//input : tempFrame / output : rFrame[i]
-		if (FRAME_MAX%intraPeriod == 0) {
+		if (FRAME_MAX % intraPeriod == 0) {
 			startIntraPrediction(i_frame,HORIZENTAL);
 		}
 		else {
@@ -232,8 +234,9 @@ int main()
 
 		//input : rFrame / output : DCTFrame
 		ICSPFowardDct(i_frame);
-		//input : DCTFrame / output : 
+		//input : DCTFrame / output :quantizationFrame
 		ICSPQuantize(i_frame);
+
 		zig_zag_scanning(i_frame);
 		ICSPDpcmSelector(i_frame,MEAN,DC);
 		//entrophy

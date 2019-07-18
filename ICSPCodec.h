@@ -23,15 +23,20 @@ extern byte cFrame[HEIGHT][WIDTH];
 extern byte rFrame[FRAME_MAX][HEIGHT][WIDTH];
 extern byte DCTFrames[FRAME_MAX][HEIGHT][WIDTH];
 extern byte calculatedFrames[FRAME_MAX][HEIGHT][WIDTH];
+extern byte quantizationFrame[FRAME_MAX][HEIGHT][WIDTH];
 extern byte IDCTFrames[FRAME_MAX][HEIGHT][WIDTH];
 extern byte tempFrame[HEIGHT][WIDTH];
+extern byte byProductFrame[HEIGHT][WIDTH];
 extern FILE *infile;
 
+using namespace std;
+
+extern string entrophyString;
 
 typedef enum {
 	VERTICAL,
 	HORIZENTAL,
-	DC_MEAN
+	INTRA_MEAN
 } IntraMode;
 
 

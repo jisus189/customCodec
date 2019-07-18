@@ -13,6 +13,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <tchar.h>
+#include <string.h>
 #include "ICSPCodec.h"
 #include "ICSPInter.h"
 #include "ICSPDCT.h"
@@ -20,6 +21,7 @@
 #include "ICSPQuantization.h"
 #include "ICSPDPCM.h"
 #include "ICSPIntra.h"
+#include "ICSPEntropyCoding.h"
 
 
 

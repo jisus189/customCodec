@@ -156,6 +156,7 @@
     <ClInclude Include="ICSPDPCM.h" />
     <ClInclude Include="ICSPEntropyCoding.h" />
     <ClInclude Include="ICSPInter.h" />
+    <ClInclude Include="ICSPIntra.h" />
     <ClInclude Include="ICSPReorder.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ICSPQuantization.h" />
@@ -166,6 +167,7 @@
     <ClCompile Include="ICSPDPCM.cpp" />
     <ClCompile Include="ICSPEntropyCoding.cpp" />
     <ClCompile Include="ICSPInter.cpp" />
+    <ClCompile Include="ICSPIntra.cpp" />
     <ClCompile Include="ICSPReorder.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

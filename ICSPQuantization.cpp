@@ -59,3 +59,45 @@ void ICSPInverseQuantization(int nowFrameCount) {
 		}
 	}
 }
+
+/*
+void ICSPQuantize(int nowFrameCount) {
+	int u, v, y, x;
+	double cu, cv, result, MSE, SUM, PSNR;
+
+	// 8x8 split
+	for (int splitY = 0; splitY < HEIGHT / 8; splitY++) {
+		for (int splitX = 0; splitX < WIDTH / 8; splitX++) {
+			for (y = 0; y < 8; y++)
+			{
+				for (x = 0; x < 8; x++)
+				{
+					DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x] = round((tempFrame[8 * splitY + y][8 * splitX + x] / 16));
+					printf("%d ", DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x]);
+				}
+				printf("\n");
+			}
+			printf("\n");
+		}
+	}
+}
+
+void ICSPInverseQuantization(int nowFrameCount) {
+	int u, v, y, x;
+	double cu, cv, result, MSE, SUM, PSNR;
+
+	// 8x8 split
+	for (int splitY = 0; splitY < HEIGHT / 8; splitY++) {
+		for (int splitX = 0; splitX < WIDTH / 8; splitX++) {
+
+			for (y = 0; y < 8; y++)
+			{
+				for (x = 0; x < 8; x++)
+				{
+					DCTFrames[nowFrameCount][8 * splitY + y][8 * splitX + x] =tempFrame[8 * splitY + y][8 * splitX + x] * 16;
+				}
+			}
+		}
+	}
+}
+*/

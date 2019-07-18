@@ -137,7 +137,7 @@ void medianPrediction(int nowFrameCount, int startY, int startX, int stage){
 			if (y != startY) {
 				calculatedFrames[nowFrameCount][y][startX] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);
 			}
-			//x의 두번째부터  수행
+			//x의 두번째부터 수행
 			for (x = startX + 1; x >= startX && x < startX + BLOCK_8; x++)
 			{
 				calculatedFrames[nowFrameCount][y][x] = calculatedValue(y, x, startY + BLOCK_8, startX + BLOCK_8, MEDIAN, stage);

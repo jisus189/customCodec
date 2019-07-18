@@ -91,7 +91,6 @@ void ICSPFowardDct(int nowFrameCount) {
 					else cv = 1.0;
 					for (x = 0; x < BLOCK_8; x++)
 					{
-						
 						for (y = 0; y < BLOCK_8; y++)
 						{
 							result += cos(((2 * (double)x + 1)*(double)u*PI) / 16)*cos(((2 * (double)y + 1)*(double)v*PI) / 16)*(double)tempFrame[BLOCK_8 * splitY + y][BLOCK_8 * splitX + x];
