@@ -20,7 +20,7 @@ double QChrominance[8][8] = {
 	{99,99,	99,	99,	99,	99,	99,	99},
 	{99,99,	99,	99,	99,	99,	99,	99} };
 
-void ICSPQuantize(int nowFrameCount) {
+void ICSPQuantization(int nowFrameCount) {
 	int u, v, y, x;
 	double cu, cv, result, MSE, SUM, PSNR;
 	

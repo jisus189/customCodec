@@ -93,6 +93,7 @@ void MotionEstimationExc(int nowFrameCount) {
 	
 	ReadFrames(nowFrameCount, nowFrameCount + 1);
 	CopyMargin(nowFrameCount + 1);
+	//여기까지 같음
 	MotionEstimation(nowFrameCount + 1);
 	
 }
@@ -148,15 +149,15 @@ void MotionEstimation(int now)
 	}
 }
 
-void MotionEstimationFalse(int now)
+void MotionEstimation_R(int now)
 {
 	//현재 조사할 블럭을 담을 배열
 	byte cBlock[BLOCK_SIZE][BLOCK_SIZE];
 	//이전 프레임에서 검색 영역을 담을 배열
 	byte pSerchRange[SERCH_RANGE + BLOCK_SIZE][SERCH_RANGE + BLOCK_SIZE];
-	for (int i = BLOCK_SIZE; i < WIDTH - BLOCK_SIZE; i += BLOCK_SIZE)
+	for (int i = 0; i < WIDTH; i += BLOCK_SIZE)
 	{
-		for (int j = BLOCK_SIZE; j < HEIGHT - BLOCK_SIZE; j += BLOCK_SIZE)
+		for (int j = 0; j < HEIGHT; j += BLOCK_SIZE)
 		{
 			int x, y;
 			//블럭을 만든다
@@ -271,7 +272,7 @@ void MakerBlock(int now, int wid, int hei, byte(*pSerchRange)[SERCH_RANGE + BLOC
 		{
 			for (int j = 0; j < BLOCK_SIZE; j++)
 			{
-				rFrame[now][hei + j][wid + i] = rFrame[now - 1][hei + j][wid + i] - cFrame[hei + j][wid + i];
+				rFrame[now][hei + j][wid + i] = pSerchRange[y + j][x + i] + cBlock[j][i];
 			}
 		}
 	}

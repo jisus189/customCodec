@@ -21,7 +21,7 @@ void verticalPrediction(int nowFrame) {
 				rFrame[nowFrame][0][x] = tempFrame[0][x];
 				for (int y = splitY * BLOCK_8 +1; y < splitY + BLOCK_8; y++)
 				{
-					rFrame[nowFrame][y][x] = tempFrame[0][x] - tempFrame[y][x];
+					 rFrame[nowFrame][y][x] = tempFrame[0][x] - tempFrame[y][x];
 				}
 			}
 		}

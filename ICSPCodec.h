@@ -31,7 +31,7 @@ extern FILE *infile;
 
 using namespace std;
 
-extern string entrophyString;
+extern string entropyString[FRAME_MAX];
 
 typedef enum {
 	VERTICAL,

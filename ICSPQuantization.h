@@ -1,3 +1,4 @@
 #pragma once
 
-void ICSPQuantize(int nowFrameCount);
+void ICSPQuantization(int nowFrameCount);
+void ICSPInverseQuantization(int nowFrameCount);

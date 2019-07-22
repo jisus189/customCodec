@@ -4,7 +4,7 @@
 #include "pch.h"
 #include <iostream>
 
-unsigned char **frame_no_loss_yuv;
+ 
 unsigned char **frame_no_loss_y;
 unsigned char **frame_no_loss_u;
 unsigned char **frame_no_loss_v;
@@ -34,6 +34,8 @@ FILE *infile;
 
 DPCMMode ICSPDpcm;
 IntraMode ICSPIntra;
+
+
 
 void getYUVFile(int inputFrames) {
 	frame_no_loss_y = new unsigned char *[inputFrames];
@@ -214,6 +216,9 @@ void startInterPrediction(int nowFrame) {
 
 int main()
 {
+	string n = "123";
+	printf("%d\n", (int)pow(2,3));
+	return 0;
 	//"C:/Users/jisus/Downloads/신입생코덱/CIF(352x288)/
 	int intraPeriod=30;
 	//파일명, 크기, QP_DC, QP_AC, intra Period, enable 입력 (MFC)
@@ -235,37 +240,57 @@ int main()
 		//input : rFrame / output : tempFrame
 		ICSPFowardDct(i_frame);
 
-		//input : tempFrame / output :byProductFrame
-		ICSPQuantize(i_frame);
+		//input : tempFrame / output : byProductFrame
+		ICSPQuantization(i_frame);
 
-		//input : byProductFrame / input : tempFrame 
+		//input : byProductFrame / output : tempFrame 
 		zig_zag_scanning(i_frame);
 
-		//input : tempFrame / output :byProductFrame
-		ICSPDpcmSelector(i_frame,MEAN,DC);
+		//input : tempFrame / output : byProductFrame
+		ICSPDpcmSelector(i_frame,LEFT,DC);
 
-		//input : byProductFrame / input : tempFrame 
+		//input : byProductFrame / output : tempFrame 
 		ICSPEntropyEncode(i_frame);
 
 		//stream header
+
 	}
 	saveYUV(FDCTPath);
 	fclose(infile);
 
+	infile = fopen(FDCTPath, "rb");
+	for (int i_frame = 0; i_frame < FRAME_MAX; i_frame++) {
+		getFrame(i_frame);
 
-	/*
+		//stream header
 
-	saveYUV(UPath, frame_no_loss_u, 0.25);
-	saveYUV(VPath, frame_no_loss_v, 0.25);
-	ICSPFowardDct(DCTPath, frame_no_loss_yuv);
-	InitFrames();
-	MotionEstimationExc(YUVPath, FRAME_MAX);
-	saveME(MVPath);
-	MotionEstimationExc(YPath,FRAME_MAX);
-	saveME(MVPath);
-	MotionEstimationExc(UPath, FRAME_MAX);
-	saveME(MVPath);
-	MotionEstimationExc(VPath, FRAME_MAX);
-	saveME(MVPath);
-	*/
+		//input : byProductFrame / output : tempFrame 
+		ICSPEntropyDecode(i_frame);
+
+		//input : tempFrame / output : byProductFrame
+		ICSPDpcmSelector(i_frame, LEFT_R, DC);
+
+		//input : byProductFrame / output : tempFrame 
+		unzig_zag_scanning(i_frame);
+
+		//input : tempFrame / output : byProductFrame
+		ICSPInverseQuantization(i_frame);
+
+		//input : rFrame / output : tempFrame
+		ICSPInverseDct(i_frame);
+
+		//input : tempFrame / output : rFrame[i] reverse 적용
+		if (FRAME_MAX % intraPeriod == 0) {
+			startIntraPrediction(i_frame, HORIZENTAL);
+		}
+		else {
+			startInterPrediction(i_frame);
+		}
+	}
+	saveYUV(FDCTPath);
+	fclose(infile);
+
+	//PSNR 계산
+
+
 }
